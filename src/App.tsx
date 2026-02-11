@@ -1,85 +1,90 @@
+// src/App.tsx
 import { useEffect } from 'react';
-import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { useTranslation } from 'react-i18next'; // استيراد الترجمة
+import ProtectedRoute from "@/components/ProtectedRoute";
 
-// Pages
+// Auth Pages
 import WelcomePage from "./pages/WelcomePage";
 import LoginPage from "./pages/LoginPage";
+import RegisterPage from "./pages/RegisterPage";
+import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import NotFound from "./pages/NotFound";
 
 // Driver Pages
-import DriverRegistration from "./pages/driver/DriverRegistration";
 import DriverDashboard from "./pages/driver/DriverDashboard";
 import DriverLoads from "./pages/driver/DriverLoads";
-import DriverSearch from "./pages/driver/DriverSearch";
+import DriverTrucks from "./pages/driver/DriverTrucks";
+import DriverSubDrivers from "./pages/driver/DriverSubDrivers";
 import DriverHistory from "./pages/driver/DriverHistory";
 import DriverAccount from "./pages/driver/DriverAccount";
-import LoadDetails from "./pages/driver/LoadDetails";
 
 // Shipper Pages
-import ShipperTrucks from "./pages/shipper/ShipperTrucks";
+import ShipperDashboard from "./pages/shipper/ShipperDashboard";
 import ShipperPostLoad from "./pages/shipper/ShipperPostLoad";
+import ShipperLoads from "./pages/shipper/ShipperLoads";
+import ShipperTrack from "./pages/shipper/ShipperTrack";
+import ShipperAccount from "./pages/shipper/ShipperAccount";
 
 // Admin Pages
 import AdminDashboard from "./pages/admin/AdminDashboard";
-
-// Components
-import FeedbackModal from "./components/FeedbackModal";
+import AdminUsers from "./pages/admin/AdminUsers";
+import AdminLoads from "./pages/admin/AdminLoads";
+import AdminTickets from "./pages/admin/AdminTickets";
+import AdminSettings from "./pages/admin/AdminSettings";
 
 const queryClient = new QueryClient();
 
 const App = () => {
-  const { i18n } = useTranslation();
-
-  // تغيير اتجاه الصفحة والخط بناءً على اللغة المختارة
   useEffect(() => {
-    const dir = i18n.language === 'ar' || i18n.language === 'ur' ? 'rtl' : 'ltr';
-    document.documentElement.dir = dir;
-    document.documentElement.lang = i18n.language;
-    
-    if (i18n.language === 'ur') {
-      document.body.style.fontFamily = "'Noto Nastaliq Urdu', serif";
-    } else if (i18n.language === 'ar') {
-      document.body.style.fontFamily = "'Cairo', sans-serif";
-    } else {
-      document.body.style.fontFamily = "ui-sans-serif, system-ui, sans-serif";
-    }
-  }, [i18n.language]);
+    document.documentElement.dir = 'rtl';
+    document.documentElement.lang = 'ar';
+  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <Toaster />
         <Sonner />
         <BrowserRouter>
           <Routes>
+            {/* Public Routes */}
             <Route path="/" element={<WelcomePage />} />
             <Route path="/login" element={<LoginPage />} />
-            
-            {/* Driver Routes */}
-            <Route path="/driver/registration" element={<DriverRegistration />} />
-            <Route path="/driver/dashboard" element={<DriverDashboard />} />
-            <Route path="/driver/loads" element={<DriverLoads />} />
-            <Route path="/driver/load/:id" element={<LoadDetails />} />
-            <Route path="/driver/search" element={<DriverSearch />} />
-            <Route path="/driver/history" element={<DriverHistory />} />
-            <Route path="/driver/account" element={<DriverAccount />} />
-            
-            {/* Shipper Routes */}
-            <Route path="/shipper" element={<ShipperTrucks />} />
-            <Route path="/shipper/post" element={<ShipperPostLoad />} />
-            
-            {/* Admin Routes */}
-            <Route path="/admin" element={<AdminDashboard />} />
-            
+            <Route path="/register" element={<RegisterPage />} />
+            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+
+            {/* Protected Routes */}
+            <Route element={<ProtectedRoute />}>
+              
+              {/* Driver */}
+              <Route path="/driver/dashboard" element={<DriverDashboard />} />
+              <Route path="/driver/loads" element={<DriverLoads />} />
+              <Route path="/driver/trucks" element={<DriverTrucks />} />
+              <Route path="/driver/sub-drivers" element={<DriverSubDrivers />} />
+              <Route path="/driver/history" element={<DriverHistory />} />
+              <Route path="/driver/account" element={<DriverAccount />} />
+
+              {/* Shipper */}
+              <Route path="/shipper/dashboard" element={<ShipperDashboard />} />
+              <Route path="/shipper/post" element={<ShipperPostLoad />} />
+              <Route path="/shipper/loads" element={<ShipperLoads />} />
+              <Route path="/shipper/track" element={<ShipperTrack />} />
+              <Route path="/shipper/account" element={<ShipperAccount />} />
+
+              {/* Admin */}
+              <Route path="/admin/dashboard" element={<AdminDashboard />} />
+              <Route path="/admin/users" element={<AdminUsers />} />
+              <Route path="/admin/loads" element={<AdminLoads />} />
+              <Route path="/admin/tickets" element={<AdminTickets />} />
+              <Route path="/admin/settings" element={<AdminSettings />} />
+              
+            </Route>
+
+            {/* 404 */}
             <Route path="*" element={<NotFound />} />
           </Routes>
-          
-          <FeedbackModal />
         </BrowserRouter>
       </TooltipProvider>
     </QueryClientProvider>
